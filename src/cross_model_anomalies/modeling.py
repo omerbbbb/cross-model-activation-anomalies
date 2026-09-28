@@ -61,7 +61,17 @@ def layer_maxima_batch(
     mask = inputs["attention_mask"].bool()
     result = []
 
-    for hidden in outputs.hidden_states:
+    for layer_index, hidden in enumerate(outputs.hidden_states):
+        if not torch.isfinite(hidden).all():
+            nonfinite = (~torch.isfinite(hidden)).sum().item()
+            raise FloatingPointError(
+                "Non-finite hidden activations detected "
+                f"at hidden state {layer_index} "
+                f"({nonfinite} NaN/Inf values). "
+                "This result is invalid; retry with a safer dtype "
+                "such as torch.float32."
+            )
+
         values = hidden.float().abs()
         values = values.masked_fill(
             ~mask.unsqueeze(-1),

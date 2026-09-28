@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cross-model-activation-anomalies"
-version = "0.2.0"
+version = "0.3.0"
 description = "Exploratory cross-model search for unusual hidden-state activations in causal language models."
 readme = "README.md"
 requires-python = ">=3.10"

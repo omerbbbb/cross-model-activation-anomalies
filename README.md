@@ -1,18 +1,36 @@
 # Cross-Model Activation Anomaly Search
 
-> **Work in progress.** An exploratory interpretability/evaluation project studying whether structured character strings can produce unusual hidden-state activations across language models with different architectures and tokenizers.
+**Exploratory pilot:** short repeated-pattern strings (for example `%_B%W` repeated) often receive unusually high hidden-state activation-anomaly scores relative to token-count-matched controls in several small open language models (0.1–1.1B parameters), but the effect is not consistent across all models and still needs stronger confirmation.
 
-## Current research question
+![Repeated pattern percentiles](assets/repetition_target_percentiles.png)
+
+## Motivation
+
+I started this project from an independent intuition: a human can often read a short repeated character pattern as one simple visual/structural object, while a language model receives a tokenizer-dependent sequence of discrete tokens. I wanted to test whether inputs that look simple as a whole to a person could nevertheless be internally unusual for a model because of this representation gap.
+
+**Tokenization is currently a hypothesis, not an established explanation.** The experiments below measure hidden-state activation anomalies and match controls by token count, but they do not yet directly test how tokenizer segmentation causes the effect. Direct tokenizer analysis is listed under Future work.
+
+> **Status: exploratory pilot, not a confirmed result.** No security vulnerability, universal trigger, or causal mechanism is claimed.
+
+## Related work
+
+I began this project independently and only afterwards learned that the question sits near several established lines of LLM research:
+
+- **Sun et al. (2024), _Massive Activations in Large Language Models_** — reports rare hidden activations with magnitudes far larger than typical activations and studies their locations and functional role across LLMs.  
+  Paper: https://arxiv.org/abs/2402.17762
+
+- **Xiao et al. (2023), _Efficient Streaming Language Models with Attention Sinks_** — identifies "attention sinks": tokens, especially early tokens, that can receive unusually strong attention even when they are not semantically important. This is related background, but it is not the same quantity measured in this repository.  
+  Paper: https://arxiv.org/abs/2309.17453
+
+The measurement goal here is different from characterizing massive activations or attention sinks themselves. This project **searches for literal input strings** that produce high activation-anomaly scores across different model families, then uses locked candidates, held-out model families, and token-count-matched controls to test whether the effect survives beyond the models used to find it.
+
+## Research question
 
 Can the same input structure produce unusually large internal activations across independently trained language models — and, if so, what property of the input causes the effect?
 
 The project started as a search for individual cross-model anomalous strings. The current focus is **mechanism**: repetition, tokenization, architecture, numerical precision, and the anomaly metric itself.
 
-No security vulnerability or universal LLM failure mode is claimed.
-
-## Why this project exists
-
-The goal is not to showcase a single strange prompt. It is to build a reproducible experimental pipeline and stress-test the interpretation at every stage:
+## Experimental pipeline
 
 ```text
 candidate generation
@@ -25,7 +43,7 @@ locked candidates
         ↓
 held-out model evaluation
         ↓
-matched controls
+token-count-matched controls
         ↓
 mechanism / confound analysis
 ```
@@ -58,11 +76,13 @@ The top search candidate was:
 | OPT-350M | 95.33 |
 | Falcon-RW-1B | 98.86 |
 
-The candidate was then locked before testing additional models.
+**Selection caveat:** these five percentiles are **in-sample with respect to candidate selection**: the same five models were used to rank and choose the candidate. They show that the search objective succeeded on its search models; they are not independent validation. The held-out model families are the fairer transfer test.
 
-### Important correction
+The candidate was locked before testing additional models. GPT-Neo was an unseen holdout in that stage. BLOOM was also intended as a holdout, but its original float16 result was later invalidated by a numerical issue described below.
 
-An initial BLOOM holdout run appeared extremely strong, but later diagnostics showed that **BLOOM produced NaNs in the float16 measurement pipeline**. That earlier BLOOM result is therefore retained only as experiment history and should **not** be treated as reliable evidence.
+### Important BLOOM correction
+
+An initial BLOOM holdout run appeared extremely strong, but later diagnostics showed that **BLOOM produced NaNs in the float16 measurement pipeline**. That earlier BLOOM result is retained only as experiment history and should **not** be treated as reliable evidence.
 
 This discovery motivated a stricter mechanism experiment and a BLOOM float32 retest.
 
@@ -81,7 +101,7 @@ The experiment used:
 - 7 model families,
 - 120 normal baseline texts per model,
 - 160 experimental strings,
-- 3,000 matched controls,
+- a 3,000-string broad control pool,
 - token-count-matched percentile comparisons.
 
 Models:
@@ -100,7 +120,7 @@ No adaptive search or optimization was used in this experiment.
 
 The specific `%_B%W` repetition pattern is **not a universal cross-model anomaly**.
 
-Its corrected token-matched median percentiles are:
+Its token-matched median percentiles are:
 
 | Repetitions | Qwen | TinyLlama | Pythia | OPT | Falcon | BLOOM* | GPT-Neo |
 |---:|---:|---:|---:|---:|---:|---:|---:|
@@ -112,13 +132,13 @@ Its corrected token-matched median percentiles are:
 
 \* BLOOM values are from the corrected **float32** retest.
 
-![Repeated pattern percentiles](assets/repetition_target_percentiles.png)
+> **Precision caveat:** the historical seven-model repetition run used float16 for Qwen, TinyLlama, Pythia, OPT, Falcon, BLOOM, and GPT-Neo, and at that time the code did not explicitly reject NaN/Inf activations. BLOOM was the model in which a float16 NaN artifact was later discovered, so BLOOM alone was rerun in float32. The other six models have **not yet been float32-confirmed**. Extreme pilot values such as `100.0` should therefore not be overinterpreted until that confirmation is done. The maintained scoring code now raises an error if non-finite hidden activations are detected.
 
-The pattern is consistently extreme in Falcon and often high in several other model families, while corrected BLOOM behaves very differently. Other repeated/control families also become high-percentile in some architectures.
+The pattern is consistently extreme in Falcon in this pilot and often high in several other model families, while corrected BLOOM behaves very differently. Other repeated/control families also become high-percentile in some architectures.
 
-The evidence therefore currently supports a more cautious interpretation:
+The evidence therefore currently supports a cautious working interpretation:
 
-> **Repeated structure interacts strongly with model/tokenizer architecture, but the mechanism is not yet established and the effect is not universal.**
+> **Repeated structure may interact with model/tokenizer architecture in ways that affect the current activation-anomaly score, but the mechanism is not established and the effect is not universal.**
 
 ## Active investigation: why is BLOOM different?
 
@@ -130,9 +150,9 @@ The full BLOOM repetition experiment was then repeated in float32 with the same:
 
 - 120-text baseline,
 - 160 experiment strings,
-- 3,000 matched controls,
+- 3,000-string control pool,
 - random seeds,
-- token-count matching.
+- token-count matching procedure.
 
 For `%_B%W`, the corrected BLOOM percentiles fell to roughly 10–16% for 2–12 repetitions.
 
@@ -174,26 +194,33 @@ This is an **exploratory heuristic**, not a probability, z-score, or established
 The repo deliberately preserves failed and corrected approaches.
 
 ### Early RMS result
+
 Raw RMS appeared to expose very large activations. Inspection showed that stable, model-specific dimensions could dominate the measurement.
 
 ### Per-dimension baseline
+
 The metric was changed to compare each layer/dimension only against its own normal-text distribution.
 
 ### Flawed cross-model normalization
+
 An early joint search normalized raw scores by a calibration quantile. This could make a model look strong even when its empirical percentile was ordinary.
 
 It was replaced by actual empirical percentiles.
 
 ### Search-set overfitting
+
 A string optimized on several models transferred poorly to Falcon, demonstrating why held-out model families matter.
 
 ### Fixed 10,000-string search
+
 The search procedure was replaced by a pre-generated candidate pool scored identically across five model families.
 
 ### Repetition follow-up
+
 Top candidates were dominated by repeated short patterns, so the project shifted from "find a magic string" to controlled tests of repetition and token structure.
 
 ### BLOOM numerical failure
+
 A later control experiment exposed float16 NaNs in BLOOM. The model was rerun in float32, which changed the interpretation substantially.
 
 ## Repository layout
@@ -204,6 +231,8 @@ A later control experiment exposed float16 NaNs in BLOOM. The model was rerun in
 ├── STATUS.md
 ├── RESEARCH_NOTES.md
 ├── SECURITY.md
+├── LICENSE
+├── .gitignore
 ├── pyproject.toml
 ├── requirements.txt
 ├── notebooks/
@@ -237,7 +266,7 @@ A later control experiment exposed float16 NaNs in BLOOM. The model was rerun in
 A CUDA GPU is strongly recommended.
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/omerbbbb/cross-model-activation-anomalies
 cd cross-model-activation-anomalies
 
 python -m venv .venv
@@ -278,24 +307,41 @@ It includes the progression from initial RMS measurements through:
 
 ## Limitations
 
-- The anomaly score is exploratory and based on a global maximum.
+- This is an exploratory pilot, not a confirmatory study.
+- The anomaly score is a custom heuristic based on a global maximum.
 - The candidate generator defines the population used for search percentiles.
+- The five Experiment 1 search-model percentiles are selection-set results, not independent validation.
 - Several experiments use relatively small baseline samples.
-- Models are relatively small open-weight LMs.
 - Token-count matching reduces one confound but does not establish causality.
+- The matched-control set for a given string can be only **tens of examples**; in the corrected BLOOM retest it ranged from **33 to 88** controls across the five `%_B%W` conditions.
+- No confidence intervals are reported yet.
+- No correction for multiple comparisons has been applied.
+- Six non-BLOOM model families in the repetition table remain float16 pilot results without a float32 confirmation run.
 - The original BLOOM float16 holdout result is invalid as confirmatory evidence.
+- Models are relatively small open-weight LMs (approximately 0.1–1.1B parameters).
+- Tokenizer segmentation is a proposed mechanism, not something directly established by the current experiments.
 - The mechanism behind the architecture-dependent repetition effect is unresolved.
 - Repeated runs, stronger statistical tests, and additional held-out architectures are still needed.
 
-## Status
+## Future work
 
-**Research in progress.**
+The next planned checks are:
 
-The current goal is not to claim a discovery prematurely. The next milestone is to explain the BLOOM discrepancy and determine which properties of repetition/tokenization predict activation anomalies across architectures.
+- **Float32 confirmation across all models** — rerun Qwen, TinyLlama, Pythia, OPT, Falcon, and GPT-Neo with explicit finiteness checks.
+- **Direct tokenizer analysis** — record exactly how each model splits the top strings and test activation score against metrics such as tokens per character, token-boundary density, and repeated-token structure.
+- **Localization of the anomaly** — log the layer, token position, and hidden dimension responsible for each winning score rather than retaining only the global maximum.
+- **Uncertainty and significance** — add bootstrap confidence intervals and/or permutation tests.
+- **Multiple-comparison handling** — predefine primary comparisons or apply an appropriate correction when testing many string families/conditions.
+- **Additional held-out architectures** — replicate on further model families not involved in candidate selection.
 
+## Not claimed
+
+- No universal LLM vulnerability.
+- No confirmed causal role for tokenization.
+- No universal `%_B%W` trigger.
+- No claim that the anomaly metric is a standard interpretability measure.
+- No claim that the current pilot establishes a new general phenomenon.
 
 ## Security
 
-The maintained code and public notebooks use `trust_remote_code=False`.
-No API keys or private credentials are required. See [`SECURITY.md`](SECURITY.md)
-for the public-release security notes and safe-running guidance.
+The maintained code and public notebooks use `trust_remote_code=False`. No API keys or private credentials are required. See [`SECURITY.md`](SECURITY.md) for the public-release security notes and safe-running guidance.

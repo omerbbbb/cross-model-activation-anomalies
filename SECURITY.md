@@ -39,3 +39,10 @@ Some notebook outputs document failed or superseded experiments. In particular,
 the original BLOOM float16 result was later invalidated by a NaN diagnostic and is
 retained only as research history. Corrected BLOOM results use float32 and are
 identified in the README and results files.
+
+
+## Numerical validity guard
+
+The maintained hidden-state extraction code checks for non-finite activations.
+If a model produces NaN or Inf hidden states, scoring stops with a
+`FloatingPointError` rather than producing a percentile from invalid values.
