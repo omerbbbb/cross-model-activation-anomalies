@@ -1,0 +1,6 @@
+repetitions,token_count,raw_anomaly,matched_percentile,matched_controls,token_tolerance,dtype
+1,4,1.815552,53.03,65,0,float32
+2,8,1.815553,15.625,63,0,float32
+4,16,1.815553,10.112,88,0,float32
+8,32,2.076668,15.094,52,0,float32
+12,48,2.199687,11.765,33,0,float32

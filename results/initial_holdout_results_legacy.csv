@@ -1,0 +1,21 @@
+rank,text,BLOOM,GPT-Neo,worst_holdout_percentile,BLOOM_note
+1,%_B%W%_B%W%_B%W%_B%W%_B%W%_B%W%_B%W%_B%W%_B%W%_B%W%_B%W%_B%W,100.0,97.0,97.0,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+2,?.\D<P}n?.\D<P}n?.\D<P}n?.\D<P}n?.\D<P}n?.\D<P}n?.\D<P}n?.\D,100.0,92.5,92.5,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+3,%uG5Q=U%uG5Q=U%uG5Q=U%uG5Q=U%uG5Q=U%uG5Q=U%uG5Q=U%uG5Q=U%uG5,100.0,96.45,96.45,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+4,?p(6i&?p(6i&?p(6i&?p(6i&?p(6i&?p(6i&?p(6i&?p(6i&?p(6i&?p(6i&,100.0,90.05,90.05,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+5,x7SX9-ox7SX9-ox7SX9-ox7SX9-ox7SX9-ox7SX9-ox7SX9-ox7SX9-ox7SX,100.0,53.92,53.92,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+6,;Myq[%}Y;Myq[%}Y;Myq[%}Y;Myq[%}Y;Myq[%}Y;Myq[%}Y;Myq[%}Y;Myq,100.0,94.45,94.45,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+7,!=Rhj9!=Rhj9!=Rhj9!=Rhj9!=Rhj9,100.0,80.56,80.56,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+8,?%*DgZ?%*DgZ?%*DgZ?%*DgZ?%*DgZ?%*DgZ?%*DgZ,100.0,88.11,88.11,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+9,_Fqw[^UY_Fqw[^UY_Fqw[^UY_Fqw[^UY_Fqw[^UY_Fqw[^UY_Fqw[^UY_Fqw,100.0,79.51,79.51,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+10,ms>P?sKms>P?sKms>P?sKms>P?sKms>P?sKms>P?sKms>P?sK,100.0,67.07,67.07,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+11,l]r<l]r<l]r<l]r<l]r<l]r<l]r<,100.0,69.72,69.72,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+12,%$K)BE#+%$K)BE#+%$K)BE#+%$K)BE#+,100.0,16.89,16.89,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+13,r\;EeB<r\;EeB<r\;EeB<r\;EeB<r\;EeB<r\;EeB<r\;EeB<r\;EeB<r\;E,100.0,96.15,96.15,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+14,&0!:)&0!:)&0!:)&0!:)&0!:)&0!:)&0!:)&0!:)&0!:)&0!:)&0!:),100.0,94.65,94.65,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+15,FV{|<a0FV{|<a0FV{|<a0FV{|<a0FV{|<a0FV{|<a0FV{|<a0FV{|<a0FV{|,100.0,76.21,76.21,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+16,spN+$zHWspN+$zHWspN+$zHWspN+$zHWspN+$zHW,100.0,63.17,63.17,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+17,/yz8me/yz8me/yz8me/yz8me/yz8me/yz8me/yz8me/yz8me/yz8me/yz8me,100.0,80.41,80.41,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+18,Gc6:>y(Gc6:>y(Gc6:>y(Gc6:>y(Gc6:>y(Gc6:>y(Gc6:>y(Gc6:>y(Gc6:,100.0,78.51,78.51,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+19,.j]H+A.j]H+A.j]H+A.j]H+A,100.0,40.98,40.98,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
+20,jNx8+I@njNx8+I@njNx8+I@njNx8+I@njNx8+I@njNx8+I@njNx8+I@njNx8,100.0,95.1,95.1,Legacy float16 result; later BLOOM diagnostics found NaNs. Do not treat this value as reliable evidence.
